@@ -14,6 +14,7 @@ class Environment(ABC):
 
     def __init__(self, width=4, height=4):
         self.window = None
+        self.frame = None
         self.width = width
         self.height = height
 
@@ -57,6 +58,11 @@ class Environment(ABC):
             "tile": self.tile_markers[self.grid[self.actor_loc]]
         }
 
+    def get_all_actions(self)->list[str]:
+        # return list of all possible action in this environment
+        # to be implemented by subclass
+        return []
+
     def get_possible_action(self) -> list[str]:
         # return list of possible action given current state
         # to be implemented by subclass
@@ -71,14 +77,18 @@ class Environment(ABC):
         window_width = self.width*50
         window_height = self.height*50
 
-        self.window = Tk()
-        self.window.geometry("{}x{}".format(window_height,window_width))
-        self.window.title("Environment")
+        if self.window == None:
+            self.window = Tk()
+            self.window.geometry("{}x{}".format(window_height,window_width))
+            self.window.title("Environment")
 
-        frame = Frame()
-        frame.pack(fill=BOTH, expand=1)
+            self.frame = Frame(self.window)
+            self.frame.pack(fill=BOTH, expand=1)
 
-        canvas = Canvas(frame)
+        for widget in self.frame.winfo_children():
+            widget.destroy()
+
+        canvas = Canvas(self.frame)
         for r in range(0,self.height):
             for c in range(0, self.width):
                 top_left = (50 * r, 50*c)

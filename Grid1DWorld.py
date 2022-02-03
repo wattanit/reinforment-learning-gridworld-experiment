@@ -10,6 +10,9 @@ class Grid1DWorld(Environment):
         self.make_goal_tile_at(0, 5)
         self.reset_state()
 
+    def get_all_actions(self) -> list[str]:
+        return ["left", "right"]
+
     def get_possible_action(self) -> list[str]:
         # return list of possible action given current state
         # to be implemented by subclass

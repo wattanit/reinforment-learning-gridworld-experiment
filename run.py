@@ -1,15 +1,18 @@
 from Environment import *
 from Grid1DWorld import Grid1DWorld
-import numpy as np
+from Agent import Agent
+
+n_training = 10
 
 if __name__ == "__main__":
     print("RUNNING")
-    # example_grid = np.array([[3,3,3,3,3],
-    #                          [3,1,0,0,3],
-    #                          [3,0,0,0,3],
-    #                          [3,0,0,2,3],
-    #                          [3,3,3,3,3]])
     env = Grid1DWorld()
-    print(env.grid)
-    env.show_env()
-    input("ctrl+c to exit")
+    agent = Agent(env, autorun=False, verbose=True, learning_rate=0.2, discount_rate=0.9)
+
+    for i in range(0,n_training):
+        agent.do_episode()
+
+    print("DONE TRAINING")
+    print("Final average reward : {}".format(agent.average_reward))
+    print("Trained policy:")
+    print(agent.policy_table)
