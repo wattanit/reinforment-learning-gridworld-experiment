@@ -17,6 +17,7 @@ class Environment(ABC):
         self.frame = None
         self.width = width
         self.height = height
+        self.experiment = None
 
         self.grid = np.zeros((height,width))
         self.starting_tile = (0,0)
@@ -73,13 +74,16 @@ class Environment(ABC):
         # to be implemented by subclass
         return
 
+    def set_experiment_value(self, experiment_value):
+        self.experiment = experiment_value
+
     def show_env(self):
         window_width = self.width*50
-        window_height = self.height*50
+        window_height = self.height*50+40
 
         if self.window == None:
             self.window = Tk()
-            self.window.geometry("{}x{}".format(window_height,window_width))
+            self.window.geometry("{}x{}".format(window_width, window_height))
             self.window.title("Environment")
 
             self.frame = Frame(self.window)
@@ -89,11 +93,11 @@ class Environment(ABC):
             widget.destroy()
 
         canvas = Canvas(self.frame)
-        for r in range(0,self.height):
-            for c in range(0, self.width):
+        for r in range(0,self.width):
+            for c in range(0, self.height):
                 top_left = (50 * r, 50*c)
                 bottom_right = (50+50*r, 50+50*c)
-                tile_type = self.grid[(r,c)]
+                tile_type = self.grid[(c,r)]
                 if tile_type==0:
                     color = "#fff"
                 elif tile_type==1:
@@ -109,12 +113,16 @@ class Environment(ABC):
                                         outline="#000",
                                         fill=color)
 
-                if self.actor_loc==(r,c):
+                if self.actor_loc==(c,r):
                     canvas.create_oval(top_left[0]+5,
                                        top_left[1]+5,
                                        bottom_right[0]-5,
                                        bottom_right[1]-5,
                                        outline="#000",
                                        fill="#8af")
+
+                if self.experiment != None:
+                    canvas.create_text(20, self.height*50+10, anchor=NW, font="Purisa",
+                                       text="Episode : {}".format(self.experiment["episode"]))
         canvas.pack(fill=BOTH, expand=1)
 

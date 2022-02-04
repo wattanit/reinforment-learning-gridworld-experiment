@@ -61,8 +61,9 @@ class Agent:
         # update policy table
         reward = self.reward[self.state['tile']]
         look_ahead_value = []
-        for action_idx in range(0,self.policy_table.shape[2]):
-            look_ahead_value.append(self.policy_table[(self.state["row"], self.state["col"], action_idx)])
+        possible_next_actions = self.environment.get_possible_action()
+        for action in possible_next_actions:
+            look_ahead_value.append(self.policy_table[(self.state["row"], self.state["col"], self.action_map[action])])
         best_utility = np.max(look_ahead_value)
 
         self.policy_table[(old_state["row"], old_state["col"],self.action_map[best_action])] += self.learning_rate*(
@@ -83,6 +84,9 @@ class Agent:
 
         # reset environment
         self.environment.reset_state()
+        self.environment.set_experiment_value({
+            "episode": self.total_episode+1
+        })
         self.state = self.environment.get_state()
 
         # loop through steps
@@ -101,7 +105,7 @@ class Agent:
 
             if not self.autorun:
                 # wait for input
-                input("Press any key to perform next step")
+                input("Press ENTER to perform next step")
             else:
                 if self.verbose:
                     time.sleep(1)
@@ -118,7 +122,7 @@ class Agent:
 
         if not self.autorun:
             # wait for input
-            input("Press any key to run next episode")
+            input("Press ENTER to run next episode")
         else:
             if self.verbose:
                 time.sleep(1)

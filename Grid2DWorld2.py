@@ -1,17 +1,19 @@
 from Environment import Environment
 
 
-class Grid2DWorld1(Environment):
+class Grid2DWorld2(Environment):
     def __init__(self):
-        super().__init__(width=7, height=3)
-        self.make_cliff_tile_at(0,1)
-        self.make_cliff_tile_at(0, 2)
-        self.make_cliff_tile_at(0, 3)
-        self.make_cliff_tile_at(0, 4)
-        self.make_cliff_tile_at(0, 5)
+        super().__init__(width=6, height=6)
         self.make_start_tile_at(0, 0)
-        self.make_goal_tile_at(0, 6)
-        self.reset_state()
+        self.make_goal_tile_at(5, 5)
+        self.make_cliff_tile_at(0, 2)
+        self.make_cliff_tile_at(1, 2)
+        self.make_cliff_tile_at(2, 2)
+        self.make_cliff_tile_at(4, 2)
+        self.make_cliff_tile_at(4, 3)
+        self.make_cliff_tile_at(4, 4)
+        self.make_cliff_tile_at(3, 4)
+        self.make_cliff_tile_at(5, 4)
 
     def get_all_actions(self) ->list[str]:
         return ["left", "right", "up", "down"]
