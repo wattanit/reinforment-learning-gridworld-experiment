@@ -1,28 +1,35 @@
 import numpy as np
 import time
 import random
+import sys
+import matplotlib.pyplot as plt
+from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
+from tkinter import *
 from Environment import Environment
 
 class Agent:
     reward = {
         'land': -1,
         'start': -1,
-        'cliff': -100,
+        'cliff': -200,
         'goal': 200
     }
 
     def __init__(self, environment: Environment,
                  autorun=False,
                  verbose=False,
+                 plot_reward=False,
                  learning_rate=0.2,
                  discount_rate=0.9):
         self.learning_rate = learning_rate
         self.discount_rate = discount_rate
         self.autorun = autorun
         self.verbose = verbose
+        self.plot_reward = plot_reward
 
         self.environment = environment
-        self.average_reward = 0
+        self.episode_rewards = []
+        self.average_rewards = []
         self.total_episode = 0
 
         # create policy table
@@ -39,6 +46,11 @@ class Agent:
 
         # init agent location
         self.state = self.environment.get_state()
+
+        if self.plot_reward:
+            self.window = Tk()
+            self.window.geometry("600x400")
+            self.window.title("Average reward vs episode")
 
     def do_step(self):
         # get possible actions
@@ -105,24 +117,41 @@ class Agent:
 
             if not self.autorun:
                 # wait for input
-                input("Press ENTER to perform next step")
+                cmd = input("Press ENTER to perform next step or Q to exit: ")
+                if (cmd == "q") or (cmd == "Q"):
+                    sys.exit(0)
             else:
                 if self.verbose:
                     time.sleep(1)
 
-        self.average_reward = (self.average_reward*self.total_episode + episode_reward)/(self.total_episode+1)
+        self.episode_rewards.append(episode_reward)
         self.total_episode += 1
+        self.average_rewards.append(np.mean(self.episode_rewards))
 
         if self.verbose:
+            if self.plot_reward:
+                for widget in self.window.winfo_children():
+                    widget.destroy()
+                figure = plt.Figure()
+                ax = figure.add_subplot(111)
+                chart_type = FigureCanvasTkAgg(figure, self.window)
+                chart_type.get_tk_widget().pack()
+                ax.plot(range(0,self.total_episode), self.average_rewards)
+                ax.set_title("Episode {}".format(self.total_episode))
+                ax.set_xlabel("episode")
+                ax.set_ylabel("average rewards")
+
             print("------------------------ episode ended---------------------------")
-            print("Episode {}: average reward = {}".format(self.total_episode, self.average_reward))
+            print("Episode {}: average reward = {}".format(self.total_episode, self.average_rewards[-1]))
             print("Policy table = ")
             print(self.policy_table)
             print("-----------------------------------------------------------------")
 
         if not self.autorun:
             # wait for input
-            input("Press ENTER to run next episode")
+            cmd = input("Press ENTER to run next episode or q to stop: ")
+            if (cmd=="q") or (cmd=="Q"):
+                sys.exit(0)
         else:
             if self.verbose:
                 time.sleep(1)

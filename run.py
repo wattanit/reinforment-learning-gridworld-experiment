@@ -10,7 +10,11 @@ if __name__ == "__main__":
     # env = Grid1DWorld()
     # env = Grid2DWorld1()
     env = Grid2DWorld2()
-    agent = Agent(env, autorun=False, verbose=True, learning_rate=0.2, discount_rate=0.9)
+    agent = Agent(env, autorun=False,
+                  verbose=True,
+                  plot_reward=True,
+                  learning_rate=0.2,
+                  discount_rate=0.9)
 
     for i in range(0,n_training):
         agent.do_episode()
